@@ -1,5 +1,6 @@
 "use client";
 
+import { toTitleCase } from "@/app/teams/const";
 import { FC } from "react";
 import {
   ResponsiveContainer,
@@ -21,9 +22,9 @@ const CustomTooltip: FC<{ active?: boolean; payload?: { payload: any }[] }> = ({
     return (
       <div className="bg-white p-3 border border-gray-300 rounded shadow-md">
         <p className="font-semibold text-gray-800">{column.name}</p>
-        {column.specifications.map((spec: { label: string; value: number }) => (
+        {column.stats.map((spec: { label: string; value: number }) => (
           <p key={spec.label} className="text-sm text-gray-600">
-            {spec.label}:{" "}
+            {toTitleCase(spec.label)}:{" "}
             <span className="font-medium text-gray-900">{spec.value}</span>
           </p>
         ))}
@@ -41,7 +42,7 @@ type Specification = {
 type Data = {
   name: string;
   score: number;
-  specifications: Specification[];
+  stats: Specification[];
 };
 
 type Props = {
@@ -56,7 +57,7 @@ const TinyBarChart: FC<Props> = ({ color, data }) => {
         <BarChart
           data={data.map((team) => ({
             ...team,
-            specifications: team.specifications.map((spec) => ({
+            stats: team.stats.map((spec) => ({
               label: spec.label,
               value: spec.value,
             })),

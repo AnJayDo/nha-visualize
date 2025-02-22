@@ -1,12 +1,32 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { data } from "../teams/const";
 import CustomShapeBarChart from "@/components/CustomShapeBarChart";
+import axios from "axios";
+import { BASE_URL } from "../teams/const";
 
-const Teams: FC = () => {
+const Players: FC = () => {
   const router = useRouter();
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/top-players`);
+        console.log(response);
+        setChartData(response.data);
+      } catch (err) {
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -14,7 +34,13 @@ const Teams: FC = () => {
         <h2 className="text-xl font-bold text-gray-800 text-center mb-4">
           Player Performance Chart
         </h2>
-        <CustomShapeBarChart color="#10B981" data={data} />
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : (
+          <CustomShapeBarChart color="#10B981" data={chartData} />
+        )}
         <div className="mt-6 text-center">
           <button
             onClick={() => router.push("/")}
@@ -28,4 +54,4 @@ const Teams: FC = () => {
   );
 };
 
-export default Teams;
+export default Players;
