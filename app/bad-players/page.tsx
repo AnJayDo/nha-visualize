@@ -11,7 +11,11 @@ const Teams = async () => {
         <h2 className="text-xl font-bold text-center mb-4 mt-12">
           Player Performance Chart
         </h2>
-        <CustomShapeBarChart color="#10B981" data={data.slice(0, 10)} />
+        <CustomShapeBarChart
+          positive={false}
+          color="#10B981"
+          data={data.slice(10, 20)}
+        />
       </div>
     </>
   );

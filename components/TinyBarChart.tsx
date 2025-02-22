@@ -1,5 +1,7 @@
 "use client";
 
+import { formatNumber, toTitleCase } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { FC } from "react";
 import {
   ResponsiveContainer,
@@ -41,7 +43,7 @@ type Specification = {
 type Data = {
   name: string;
   score: number;
-  specifications: Specification[];
+  stats: Specification[];
 };
 
 type Props = {
@@ -50,30 +52,48 @@ type Props = {
 };
 
 const TinyBarChart: FC<Props> = ({ color, data }) => {
+  const router = useRouter();
+
+  const handleBarClick = (data: any) => {
+    if (data.id) {
+      router.push("/team/" + data.id);
+    }
+  };
+
   return (
-    <div className="w-full h-[500px] bg-gray-50 rounded-lg shadow-md p-4 flex justify-center items-center">
+    <div className="w-full h-[calc(100vh-200px)] text-white rounded-lg p-4 flex justify-center items-center">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data.map((team) => ({
             ...team,
-            specifications: team.specifications.map((spec) => ({
-              label: spec.label,
-              value: spec.value,
-            })),
+            specifications: [
+              {
+                label: "Score",
+                value: formatNumber(team.score),
+              },
+              ...team.stats.map((spec) => ({
+                label: toTitleCase(spec.label),
+                value: formatNumber(spec.value),
+              })),
+            ],
           }))}
         >
           <XAxis
             dataKey="name"
-            className="text-gray-700 font-semibold"
-            tick={{ fill: "#4F46E5", fontSize: 12, fontWeight: "bold" }}
+            tick={{ fill: "#ffffff", fontSize: 12, fontWeight: "bold" }}
             angle={-25}
             textAnchor="end"
             interval={0}
             height={80}
           />
-          <YAxis className="text-gray-700" />
+          <YAxis tick={{ fill: "#ffffff", fontSize: 12, fontWeight: "bold" }} />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="score" fill={color} radius={[6, 6, 0, 0]}>
+          <Bar
+            dataKey="score"
+            fill={color}
+            radius={[6, 6, 0, 0]}
+            onClick={(e) => handleBarClick(e)}
+          >
             {data.map((_, index) => (
               <Cell key={`cell-${index}`} fill={color} />
             ))}
